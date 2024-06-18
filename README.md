@@ -1,3 +1,6 @@
+![PyPI - Version](https://img.shields.io/pypi/v/vmware-fusion-py)
+![GitHub License](https://img.shields.io/github/license/ahmetmutlugun/vmware-fusion-py)
+
 # vmware-fusion-py
 
 This Python module provides a convenient way to control and interact with VMware Fusion virtual machines using the `vmrun` command-line utility. Built and tested for VMware Fusion on arm64 MacOS
