@@ -1,3 +1,5 @@
+#pylint: disable=R0913
+#pylint: disable=R0904
 """This module contains the VMware wrapper class and helper functions."""
 import subprocess
 
@@ -90,11 +92,11 @@ class VMware:
         if options:
             cmd.extend(options)
         try:
-            proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            stdout, stderr = proc.communicate()
-            stdout = stdout.decode("utf-8").strip()
-            stderr = stderr.decode("utf-8").strip()
-            return {"return_code": proc.returncode, "output": stdout}
+            with subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE) as proc:
+                stdout, stderr = proc.communicate()
+                stdout = stdout.decode("utf-8").strip()
+                stderr = stderr.decode("utf-8").strip()
+                return {"return_code": proc.returncode, "output": stdout}
         except FileNotFoundError:
             return {"return_code": 2, "output": "File not found!"}
 
@@ -266,6 +268,11 @@ class VMware:
         return self._run_command("listHostNetworks", None)
 
     def list_port_forwardings(self, host_network_name):
+        """
+        List the port forwardings
+        :param host_network_name: The name of the host network
+        :return: The return code and the output
+        """
         return self._run_command("listPortForwardings", host_network_name)
 
     def set_port_forwarding(
