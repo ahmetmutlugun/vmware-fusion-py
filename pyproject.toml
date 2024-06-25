@@ -1,6 +1,6 @@
 [project]
 name = "vmware-fusion-py"
-version = "1.0.0a1"
+version = "1.0.0b1"
 description = "A Python library for interacting with the VMWare Fusion CLI"
 authors = [{ name = "Ahmet Mutlugun", email = "ahmet.mutlugun@gmail.com" }]
 readme = "README.md"
