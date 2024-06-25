@@ -17,7 +17,7 @@ keywords = [
 # classifiers = []
 
 [project.urls]
-homepage = "https://github.com/ahmetmutlugun/vmware-fusion-py"
+home-page = "https://github.com/ahmetmutlugun/vmware-fusion-py"
 repository = "https://github.com/ahmetmutlugun/vmware-fusion-py"
 # Add documentation
 
