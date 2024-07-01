@@ -1,7 +1,8 @@
-#pylint: disable=R0913
-#pylint: disable=R0904
+# pylint: disable=R0913
+# pylint: disable=R0904
 """This module contains the VMware wrapper class and helper functions."""
 import subprocess
+
 
 def _provide_vm_path(func):
     def wrapper(self, *args, **kwargs):
@@ -15,8 +16,10 @@ def _provide_vm_path(func):
 
     return wrapper
 
+
 class VMware:
     """Wrapper class for the vmrun cli"""
+
     def __init__(
         self,
         vmrun_path: str,
@@ -92,7 +95,9 @@ class VMware:
         if options:
             cmd.extend(options)
         try:
-            with subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE) as proc:
+            with subprocess.Popen(
+                cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+            ) as proc:
                 stdout, stderr = proc.communicate()
                 stdout = stdout.decode("utf-8").strip()
                 stderr = stderr.decode("utf-8").strip()
@@ -210,7 +215,7 @@ class VMware:
         return self._run_command("revertToSnapshot", vm_path, options)
 
     @_provide_vm_path
-    def list_network_adapters(self, vm_path):
+    def list_network_adapters(self, vm_path=None):
         """
         List the network adapters of the vm
         :param vm_path: The path to the vm
@@ -425,11 +430,38 @@ class VMware:
     @_provide_vm_path
     def list_processes_in_guest(self, vm_path=None):
         """
-        List the processes in the guest
-        :param vm_path: The path to the vm
-        :return: The return code and the output
+        List the processes in the guest VM.
+
+        :param vm_path: The path to the VM
+        :return: A list of dictionaries containing process information, or an error dictionary
         """
-        return self._run_command("listProcessesInGuest", vm_path)
+        output = self._run_command("listProcessesInGuest", vm_path)
+
+        if output["return_code"] != 0:
+            return output
+
+        processes = {}
+        for line in output["output"].splitlines()[1:]:
+            try:
+                pid, owner, cmd = [item.split("=")[1] for item in line.split(", ")]
+                processes.update({pid: {"owner": owner, "cmd": cmd}})
+            except (ValueError, IndexError) as e:
+                print(f"Error parsing line: {line}. Error: {str(e)}")
+                continue
+
+        return processes
+
+    @_provide_vm_path
+    def get_process_by_id(self, process_id, vm_path=None):
+        process_id = str(process_id)
+        if self.vm_path:
+            processes = self.list_processes_in_guest()
+        else:
+            processes = self.list_processes_in_guest(vm_path)
+
+        if processes and process_id in processes:
+            return processes[process_id]
+        return None
 
     @_provide_vm_path
     def kill_process_in_guest(self, process_id, vm_path=None):
@@ -450,7 +482,7 @@ class VMware:
         no_wait=False,
         active_window=False,
         interactive=False,
-        vm_path=None
+        vm_path=None,
     ):
         """
         Run a script in the guest
@@ -606,7 +638,9 @@ class VMware:
         return self._run_command("captureScreen", vm_path, options)
 
     @_provide_vm_path
-    def write_variable(self, variable_type, variable_name, variable_value, vm_path=None):
+    def write_variable(
+        self, variable_type, variable_name, variable_value, vm_path=None
+    ):
         """
         Write a variable in the guest
         :param variable_type: The type of the variable
