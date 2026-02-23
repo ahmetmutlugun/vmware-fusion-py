@@ -1,6 +1,7 @@
 # pylint: disable=R0913
 # pylint: disable=R0904
 """This module contains the VMware wrapper class and helper functions."""
+
 import functools
 import subprocess
 
@@ -31,7 +32,6 @@ class VMware:
         guest_password: str = "",
         vm_path: str = "",
     ) -> None:
-
         self.vmrun_path = vmrun_path
         self.host_type = host_type
         self.vm_password = vm_password

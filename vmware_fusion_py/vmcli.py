@@ -1,4 +1,5 @@
 """Wrapper for the vmcli command-line tool shipped with VMware Fusion."""
+
 import subprocess
 
 
@@ -104,7 +105,9 @@ class VMwareCLI:
         :param vcpus: Number of vCPUs
         :param vm_path: Path to the VMX file (falls back to instance vm_path)
         """
-        return self._run_command("Chipset", "SetVCpuCount", vm_path=vm_path, args=[str(vcpus)])
+        return self._run_command(
+            "Chipset", "SetVCpuCount", vm_path=vm_path, args=[str(vcpus)]
+        )
 
     def set_mem_size(self, size_mb, vm_path=None):
         """
@@ -113,7 +116,9 @@ class VMwareCLI:
         :param size_mb: Memory in megabytes
         :param vm_path: Path to the VMX file
         """
-        return self._run_command("Chipset", "SetMemSize", vm_path=vm_path, args=[str(size_mb)])
+        return self._run_command(
+            "Chipset", "SetMemSize", vm_path=vm_path, args=[str(size_mb)]
+        )
 
     def set_cores_per_socket(self, cores, vm_path=None):
         """
@@ -122,7 +127,9 @@ class VMwareCLI:
         :param cores: Number of cores per socket
         :param vm_path: Path to the VMX file
         """
-        return self._run_command("Chipset", "SetCoresPerSocket", vm_path=vm_path, args=[str(cores)])
+        return self._run_command(
+            "Chipset", "SetCoresPerSocket", vm_path=vm_path, args=[str(cores)]
+        )
 
     def set_simultaneous_threads(self, threads, vm_path=None):
         """
@@ -131,7 +138,9 @@ class VMwareCLI:
         :param threads: Number of threads per vCPU
         :param vm_path: Path to the VMX file
         """
-        return self._run_command("Chipset", "SetSimultaneousThreads", vm_path=vm_path, args=[str(threads)])
+        return self._run_command(
+            "Chipset", "SetSimultaneousThreads", vm_path=vm_path, args=[str(threads)]
+        )
 
     # ------------------------------------------------------------------
     # Disk
@@ -162,7 +171,9 @@ class VMwareCLI:
         :param new_num_sectors: Desired size in sectors
         :param vm_path: Path to the VMX file
         """
-        return self._run_command("Disk", "Extend", vm_path=vm_path, args=[disk_label, str(new_num_sectors)])
+        return self._run_command(
+            "Disk", "Extend", vm_path=vm_path, args=[disk_label, str(new_num_sectors)]
+        )
 
     def move_disk(self, from_label, to_label, vm_path=None):
         """
@@ -172,7 +183,9 @@ class VMwareCLI:
         :param to_label: Destination device label
         :param vm_path: Path to the VMX file
         """
-        return self._run_command("Disk", "Move", vm_path=vm_path, args=[from_label, to_label])
+        return self._run_command(
+            "Disk", "Move", vm_path=vm_path, args=[from_label, to_label]
+        )
 
     def branch_disk(self, disk_label, vm_path=None):
         """
@@ -192,7 +205,9 @@ class VMwareCLI:
         :param vm_path: Path to the VMX file
         """
         state = "true" if connected else "false"
-        return self._run_command("Disk", "ConnectionControl", vm_path=vm_path, args=[disk_label, state])
+        return self._run_command(
+            "Disk", "ConnectionControl", vm_path=vm_path, args=[disk_label, state]
+        )
 
     # ------------------------------------------------------------------
     # Ethernet
@@ -210,9 +225,21 @@ class VMwareCLI:
         :param connection_type: Connection type string (e.g. ``bridged``, ``nat``, ``hostonly``)
         :param vm_path: Path to the VMX file
         """
-        return self._run_command("Ethernet", "SetConnectionType", vm_path=vm_path, args=[device_label, connection_type])
+        return self._run_command(
+            "Ethernet",
+            "SetConnectionType",
+            vm_path=vm_path,
+            args=[device_label, connection_type],
+        )
 
-    def set_ethernet_security_policy(self, device_label, no_promisc, down_when_addr_mismatch, no_forged_src_addr, vm_path=None):
+    def set_ethernet_security_policy(
+        self,
+        device_label,
+        no_promisc,
+        down_when_addr_mismatch,
+        no_forged_src_addr,
+        vm_path=None,
+    ):
         """
         Set the security policy for an ethernet adapter.
 
@@ -222,10 +249,19 @@ class VMwareCLI:
         :param no_forged_src_addr: Disallow forged source addresses (bool)
         :param vm_path: Path to the VMX file
         """
+
         def _b(v):
             return "true" if v else "false"
-        args = [device_label, _b(no_promisc), _b(down_when_addr_mismatch), _b(no_forged_src_addr)]
-        return self._run_command("Ethernet", "SetSecurityPolicy", vm_path=vm_path, args=args)
+
+        args = [
+            device_label,
+            _b(no_promisc),
+            _b(down_when_addr_mismatch),
+            _b(no_forged_src_addr),
+        ]
+        return self._run_command(
+            "Ethernet", "SetSecurityPolicy", vm_path=vm_path, args=args
+        )
 
     def set_ethernet_network_name(self, device_label, network_name, vm_path=None):
         """
@@ -235,7 +271,12 @@ class VMwareCLI:
         :param network_name: Name of the host network
         :param vm_path: Path to the VMX file
         """
-        return self._run_command("Ethernet", "SetNetworkName", vm_path=vm_path, args=[device_label, network_name])
+        return self._run_command(
+            "Ethernet",
+            "SetNetworkName",
+            vm_path=vm_path,
+            args=[device_label, network_name],
+        )
 
     def ethernet_connection_control(self, device_label, connected, vm_path=None):
         """
@@ -246,7 +287,9 @@ class VMwareCLI:
         :param vm_path: Path to the VMX file
         """
         state = "true" if connected else "false"
-        return self._run_command("Ethernet", "ConnectionControl", vm_path=vm_path, args=[device_label, state])
+        return self._run_command(
+            "Ethernet", "ConnectionControl", vm_path=vm_path, args=[device_label, state]
+        )
 
     # ------------------------------------------------------------------
     # MKS (display / keyboard / screen)
@@ -263,7 +306,9 @@ class VMwareCLI:
         :param filename: Output file path on the host
         :param vm_path: Path to the VMX file
         """
-        return self._run_command("MKS", "captureScreenshot", vm_path=vm_path, args=[filename])
+        return self._run_command(
+            "MKS", "captureScreenshot", vm_path=vm_path, args=[filename]
+        )
 
     def send_key_event(self, hidcode, modifier, vm_path=None):
         """
@@ -273,7 +318,9 @@ class VMwareCLI:
         :param modifier: Modifier flags (e.g. 0 for none)
         :param vm_path: Path to the VMX file
         """
-        return self._run_command("MKS", "sendKeyEvent", vm_path=vm_path, args=[str(hidcode), str(modifier)])
+        return self._run_command(
+            "MKS", "sendKeyEvent", vm_path=vm_path, args=[str(hidcode), str(modifier)]
+        )
 
     def send_key_sequence(self, sequence, vm_path=None):
         """
@@ -282,7 +329,9 @@ class VMwareCLI:
         :param sequence: Key sequence string
         :param vm_path: Path to the VMX file
         """
-        return self._run_command("MKS", "sendKeySequence", vm_path=vm_path, args=[sequence])
+        return self._run_command(
+            "MKS", "sendKeySequence", vm_path=vm_path, args=[sequence]
+        )
 
     def set_guest_resolution(self, width, height, vm_path=None):
         """
@@ -292,7 +341,9 @@ class VMwareCLI:
         :param height: Height in pixels
         :param vm_path: Path to the VMX file
         """
-        return self._run_command("MKS", "SetGuestResolution", vm_path=vm_path, args=[str(width), str(height)])
+        return self._run_command(
+            "MKS", "SetGuestResolution", vm_path=vm_path, args=[str(width), str(height)]
+        )
 
     def set_num_displays(self, count, vm_path=None):
         """
@@ -301,7 +352,9 @@ class VMwareCLI:
         :param count: Number of displays
         :param vm_path: Path to the VMX file
         """
-        return self._run_command("MKS", "SetNumDisplays", vm_path=vm_path, args=[str(count)])
+        return self._run_command(
+            "MKS", "SetNumDisplays", vm_path=vm_path, args=[str(count)]
+        )
 
     def set_3d_accel(self, enabled, vm_path=None):
         """
@@ -310,7 +363,9 @@ class VMwareCLI:
         :param enabled: ``True`` to enable, ``False`` to disable
         :param vm_path: Path to the VMX file
         """
-        return self._run_command("MKS", "SetAccel3d", vm_path=vm_path, args=["true" if enabled else "false"])
+        return self._run_command(
+            "MKS", "SetAccel3d", vm_path=vm_path, args=["true" if enabled else "false"]
+        )
 
     def set_vram_size(self, size_mb, vm_path=None):
         """
@@ -319,7 +374,9 @@ class VMwareCLI:
         :param size_mb: VRAM size in MB
         :param vm_path: Path to the VMX file
         """
-        return self._run_command("MKS", "SetVramSize", vm_path=vm_path, args=[str(size_mb)])
+        return self._run_command(
+            "MKS", "SetVramSize", vm_path=vm_path, args=[str(size_mb)]
+        )
 
     def set_graphics_memory(self, size_kb, vm_path=None):
         """
@@ -328,7 +385,9 @@ class VMwareCLI:
         :param size_kb: Graphics memory in KB
         :param vm_path: Path to the VMX file
         """
-        return self._run_command("MKS", "SetGraphicsMemoryKB", vm_path=vm_path, args=[str(size_kb)])
+        return self._run_command(
+            "MKS", "SetGraphicsMemoryKB", vm_path=vm_path, args=[str(size_kb)]
+        )
 
     # ------------------------------------------------------------------
     # ConfigParams
@@ -346,7 +405,9 @@ class VMwareCLI:
         :param value: Config key value
         :param vm_path: Path to the VMX file
         """
-        return self._run_command("ConfigParams", "SetEntry", vm_path=vm_path, args=[name, value])
+        return self._run_command(
+            "ConfigParams", "SetEntry", vm_path=vm_path, args=[name, value]
+        )
 
     # ------------------------------------------------------------------
     # HGFS (shared folders)
@@ -364,7 +425,12 @@ class VMwareCLI:
         :param enabled: ``True`` to enable, ``False`` to disable
         :param vm_path: Path to the VMX file
         """
-        return self._run_command("HGFS", "SetEnabled", vm_path=vm_path, args=[share_label, "true" if enabled else "false"])
+        return self._run_command(
+            "HGFS",
+            "SetEnabled",
+            vm_path=vm_path,
+            args=[share_label, "true" if enabled else "false"],
+        )
 
     def set_share_read_access(self, share_label, readable, vm_path=None):
         """
@@ -374,7 +440,12 @@ class VMwareCLI:
         :param readable: ``True`` to allow reads
         :param vm_path: Path to the VMX file
         """
-        return self._run_command("HGFS", "SetReadAccess", vm_path=vm_path, args=[share_label, "true" if readable else "false"])
+        return self._run_command(
+            "HGFS",
+            "SetReadAccess",
+            vm_path=vm_path,
+            args=[share_label, "true" if readable else "false"],
+        )
 
     def set_share_write_access(self, share_label, writable, vm_path=None):
         """
@@ -384,7 +455,12 @@ class VMwareCLI:
         :param writable: ``True`` to allow writes
         :param vm_path: Path to the VMX file
         """
-        return self._run_command("HGFS", "SetWriteAccess", vm_path=vm_path, args=[share_label, "true" if writable else "false"])
+        return self._run_command(
+            "HGFS",
+            "SetWriteAccess",
+            vm_path=vm_path,
+            args=[share_label, "true" if writable else "false"],
+        )
 
     def set_share_follow_symlinks(self, share_label, follow, vm_path=None):
         """
@@ -394,7 +470,12 @@ class VMwareCLI:
         :param follow: ``True`` to follow symlinks
         :param vm_path: Path to the VMX file
         """
-        return self._run_command("HGFS", "SetFollowSymlinks", vm_path=vm_path, args=[share_label, "true" if follow else "false"])
+        return self._run_command(
+            "HGFS",
+            "SetFollowSymlinks",
+            vm_path=vm_path,
+            args=[share_label, "true" if follow else "false"],
+        )
 
     def set_share_host_path(self, share_label, host_path, vm_path=None):
         """
@@ -404,7 +485,9 @@ class VMwareCLI:
         :param host_path: Absolute host path
         :param vm_path: Path to the VMX file
         """
-        return self._run_command("HGFS", "SetHostPath", vm_path=vm_path, args=[share_label, host_path])
+        return self._run_command(
+            "HGFS", "SetHostPath", vm_path=vm_path, args=[share_label, host_path]
+        )
 
     def set_share_guest_name(self, share_label, guest_name, vm_path=None):
         """
@@ -414,7 +497,9 @@ class VMwareCLI:
         :param guest_name: Name visible inside the guest
         :param vm_path: Path to the VMX file
         """
-        return self._run_command("HGFS", "SetGuestName", vm_path=vm_path, args=[share_label, guest_name])
+        return self._run_command(
+            "HGFS", "SetGuestName", vm_path=vm_path, args=[share_label, guest_name]
+        )
 
     def set_share_present(self, share_label, present, vm_path=None):
         """
@@ -424,7 +509,12 @@ class VMwareCLI:
         :param present: ``True`` to mark as present
         :param vm_path: Path to the VMX file
         """
-        return self._run_command("HGFS", "SetPresent", vm_path=vm_path, args=[share_label, "true" if present else "false"])
+        return self._run_command(
+            "HGFS",
+            "SetPresent",
+            vm_path=vm_path,
+            args=[share_label, "true" if present else "false"],
+        )
 
     # ------------------------------------------------------------------
     # Tools
@@ -434,7 +524,9 @@ class VMwareCLI:
         """Mount the VMware Tools installer ISO in the guest."""
         return self._run_command("Tools", "Install", vm_path=vm_path)
 
-    def upgrade_tools(self, cmdline=None, backing_type=None, backing_path=None, vm_path=None):
+    def upgrade_tools(
+        self, cmdline=None, backing_type=None, backing_path=None, vm_path=None
+    ):
         """
         Upgrade VMware Tools inside the guest.
 
@@ -508,7 +600,12 @@ class VMwareCLI:
         :param enabled: ``True`` to enable VProbes
         :param vm_path: Path to the VMX file
         """
-        return self._run_command("VProbes", "SetEnabled", vm_path=vm_path, args=["true" if enabled else "false"])
+        return self._run_command(
+            "VProbes",
+            "SetEnabled",
+            vm_path=vm_path,
+            args=["true" if enabled else "false"],
+        )
 
     # ------------------------------------------------------------------
     # Guest (guest ops via VMware Tools)
@@ -536,7 +633,9 @@ class VMwareCLI:
         :param path: Guest path to list
         :param vm_path: Path to the VMX file
         """
-        return self._run_command("Guest", "ls", vm_path=vm_path, args=self._guest_args([path]))
+        return self._run_command(
+            "Guest", "ls", vm_path=vm_path, args=self._guest_args([path])
+        )
 
     def guest_mkdir(self, path, vm_path=None):
         """
@@ -545,7 +644,9 @@ class VMwareCLI:
         :param path: Guest path to create
         :param vm_path: Path to the VMX file
         """
-        return self._run_command("Guest", "mkdir", vm_path=vm_path, args=self._guest_args([path]))
+        return self._run_command(
+            "Guest", "mkdir", vm_path=vm_path, args=self._guest_args([path])
+        )
 
     def guest_rm(self, path, vm_path=None):
         """
@@ -554,7 +655,9 @@ class VMwareCLI:
         :param path: Guest file path to remove
         :param vm_path: Path to the VMX file
         """
-        return self._run_command("Guest", "rm", vm_path=vm_path, args=self._guest_args([path]))
+        return self._run_command(
+            "Guest", "rm", vm_path=vm_path, args=self._guest_args([path])
+        )
 
     def guest_rmdir(self, path, vm_path=None):
         """
@@ -563,7 +666,9 @@ class VMwareCLI:
         :param path: Guest directory path to remove
         :param vm_path: Path to the VMX file
         """
-        return self._run_command("Guest", "rmdir", vm_path=vm_path, args=self._guest_args([path]))
+        return self._run_command(
+            "Guest", "rmdir", vm_path=vm_path, args=self._guest_args([path])
+        )
 
     def guest_mv(self, src, dst, vm_path=None):
         """
@@ -573,7 +678,9 @@ class VMwareCLI:
         :param dst: Destination guest path
         :param vm_path: Path to the VMX file
         """
-        return self._run_command("Guest", "mv", vm_path=vm_path, args=self._guest_args([src, dst]))
+        return self._run_command(
+            "Guest", "mv", vm_path=vm_path, args=self._guest_args([src, dst])
+        )
 
     def guest_mvdir(self, src, dst, vm_path=None):
         """
@@ -583,7 +690,9 @@ class VMwareCLI:
         :param dst: Destination guest path
         :param vm_path: Path to the VMX file
         """
-        return self._run_command("Guest", "mvdir", vm_path=vm_path, args=self._guest_args([src, dst]))
+        return self._run_command(
+            "Guest", "mvdir", vm_path=vm_path, args=self._guest_args([src, dst])
+        )
 
     def guest_ps(self, pid=None, vm_path=None):
         """
@@ -595,7 +704,9 @@ class VMwareCLI:
         extra = []
         if pid is not None:
             extra.extend(["-pid", str(pid)])
-        return self._run_command("Guest", "ps", vm_path=vm_path, args=self._guest_args(extra))
+        return self._run_command(
+            "Guest", "ps", vm_path=vm_path, args=self._guest_args(extra)
+        )
 
     def guest_kill(self, pid, vm_path=None):
         """
@@ -604,7 +715,9 @@ class VMwareCLI:
         :param pid: PID to kill
         :param vm_path: Path to the VMX file
         """
-        return self._run_command("Guest", "kill", vm_path=vm_path, args=self._guest_args([str(pid)]))
+        return self._run_command(
+            "Guest", "kill", vm_path=vm_path, args=self._guest_args([str(pid)])
+        )
 
     def guest_run(
         self,
@@ -643,7 +756,9 @@ class VMwareCLI:
         extra.append(program)
         if program_args:
             extra.extend(program_args)
-        return self._run_command("Guest", "run", vm_path=vm_path, args=self._guest_args(extra))
+        return self._run_command(
+            "Guest", "run", vm_path=vm_path, args=self._guest_args(extra)
+        )
 
     def guest_copy_from(self, guest_path, host_path, vm_path=None):
         """
@@ -653,7 +768,12 @@ class VMwareCLI:
         :param host_path: Destination path on the host
         :param vm_path: Path to the VMX file
         """
-        return self._run_command("Guest", "copyFrom", vm_path=vm_path, args=self._guest_args([guest_path, host_path]))
+        return self._run_command(
+            "Guest",
+            "copyFrom",
+            vm_path=vm_path,
+            args=self._guest_args([guest_path, host_path]),
+        )
 
     def guest_copy_to(self, host_path, guest_path, vm_path=None):
         """
@@ -663,19 +783,30 @@ class VMwareCLI:
         :param guest_path: Destination path inside the guest
         :param vm_path: Path to the VMX file
         """
-        return self._run_command("Guest", "copyTo", vm_path=vm_path, args=self._guest_args([host_path, guest_path]))
+        return self._run_command(
+            "Guest",
+            "copyTo",
+            vm_path=vm_path,
+            args=self._guest_args([host_path, guest_path]),
+        )
 
     def guest_create_temp_dir(self, vm_path=None):
         """Create a temporary directory in the guest."""
-        return self._run_command("Guest", "createTempDir", vm_path=vm_path, args=self._guest_args())
+        return self._run_command(
+            "Guest", "createTempDir", vm_path=vm_path, args=self._guest_args()
+        )
 
     def guest_create_temp_file(self, vm_path=None):
         """Create a temporary file in the guest."""
-        return self._run_command("Guest", "createTempFile", vm_path=vm_path, args=self._guest_args())
+        return self._run_command(
+            "Guest", "createTempFile", vm_path=vm_path, args=self._guest_args()
+        )
 
     def guest_env(self, vm_path=None):
         """List environment variables in the guest."""
-        return self._run_command("Guest", "env", vm_path=vm_path, args=self._guest_args())
+        return self._run_command(
+            "Guest", "env", vm_path=vm_path, args=self._guest_args()
+        )
 
     # ------------------------------------------------------------------
     # Power (vmcli native power control)
