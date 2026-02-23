@@ -135,9 +135,7 @@ class _DiskModule:
         :param to_label: Destination device label
         :param vm_path: Path to the VMX file
         """
-        return self._run(
-            "Disk", "Move", vm_path=vm_path, args=[from_label, to_label]
-        )
+        return self._run("Disk", "Move", vm_path=vm_path, args=[from_label, to_label])
 
     def branch(self, disk_label, vm_path=None):
         """
@@ -157,7 +155,10 @@ class _DiskModule:
         :param vm_path: Path to the VMX file
         """
         return self._run(
-            "Disk", "ConnectionControl", vm_path=vm_path, args=[disk_label, _b(connected)]
+            "Disk",
+            "ConnectionControl",
+            vm_path=vm_path,
+            args=[disk_label, _b(connected)],
         )
 
 
@@ -363,7 +364,9 @@ class _ConfigParamsModule:
         :param value: Config key value
         :param vm_path: Path to the VMX file
         """
-        return self._run("ConfigParams", "SetEntry", vm_path=vm_path, args=[name, value])
+        return self._run(
+            "ConfigParams", "SetEntry", vm_path=vm_path, args=[name, value]
+        )
 
 
 # ---------------------------------------------------------------------------
@@ -599,7 +602,9 @@ class _GuestModule:
         :param path: Guest path to create
         :param vm_path: Path to the VMX file
         """
-        return self._run("Guest", "mkdir", vm_path=vm_path, args=self._guest_args([path]))
+        return self._run(
+            "Guest", "mkdir", vm_path=vm_path, args=self._guest_args([path])
+        )
 
     def rm(self, path, vm_path=None):
         """
@@ -617,7 +622,9 @@ class _GuestModule:
         :param path: Guest directory path to remove
         :param vm_path: Path to the VMX file
         """
-        return self._run("Guest", "rmdir", vm_path=vm_path, args=self._guest_args([path]))
+        return self._run(
+            "Guest", "rmdir", vm_path=vm_path, args=self._guest_args([path])
+        )
 
     def mv(self, src, dst, vm_path=None):
         """

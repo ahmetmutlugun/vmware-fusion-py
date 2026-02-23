@@ -3,6 +3,7 @@ name = "vmware-fusion-py"
 version = "1.1.0"
 description = "A Python library for interacting with the VMWare Fusion CLI"
 authors = [{ name = "Ahmet Mutlugun", email = "ahmet.mutlugun@gmail.com" }]
+license = "MIT"
 readme = "README.md"
 keywords = [
     "vmware",
@@ -14,16 +15,27 @@ keywords = [
     "library",
     "virtualization",
 ]
-# classifiers = []
+classifiers = [
+    "Operating System :: MacOS",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Libraries",
+    "Topic :: System :: Emulators",
+    "Intended Audience :: Developers",
+]
+dependencies = [
+    "requests>=2.28",
+]
 
 [project.urls]
 Homepage = "https://github.com/ahmetmutlugun/vmware-fusion-py"
 Repository = "https://github.com/ahmetmutlugun/vmware-fusion-py"
 # Add documentation
-
-dependencies = [
-    "requests>=2.28",
-]
 
 [build-system]
 requires = ["setuptools"]
