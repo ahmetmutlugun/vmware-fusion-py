@@ -3,7 +3,7 @@
 
 # vmware-fusion-py
 
-A Python wrapper for controlling VMware Fusion virtual machines through the `vmrun` and `vmcli` command-line utilities. Designed for automation, scripting, and programmatic VM management on macOS.
+A Python wrapper for controlling VMware Fusion virtual machines through the `vmrun` and `vmcli` command-line utilities and the `vmrest` local REST API. Designed for automation, scripting, and programmatic VM management on macOS.
 
 ## Features
 
@@ -32,11 +32,21 @@ A Python wrapper for controlling VMware Fusion virtual machines through the `vmr
 - Guest ops: `ls`, `mkdir`, `rm`, `mv`, `ps`, `kill`, `run`, `copyFrom`, `copyTo`, `env`, create temp files and directories
 - Power and snapshot control (native vmcli)
 
+**`VMRest` — full `vmrest` REST API coverage** *(VMware Fusion Pro 13+)*
+- VM management: list, get, clone, delete, register
+- Power control: on, off, shutdown, suspend, pause, unpause
+- Networking: get guest IP, list NIC IPs, manage NIC devices
+- Shared folders: list, mount, update, delete
+- VM parameters and restriction settings
+- Virtual networks: list, create, MAC-to-IP mappings, port forwarding rules
+- Typed exception hierarchy for HTTP errors (`VMRestAuthError`, `VMRestNotFoundError`, etc.)
+
 ## Requirements
 
 - Python 3.8+
 - VMware Fusion on macOS
 - `vmrun` and `vmcli` (included with VMware Fusion)
+- `requests>=2.28` (installed automatically as a dependency)
 
 ## Installation
 
@@ -156,6 +166,57 @@ vmcli.deploy_template("/path/template.vmtx")
 vmcli.set_vprobes_enabled(True)
 vmcli.load_vprobes("/path/script.vp")
 ```
+
+### VMRest (vmrest REST API)
+
+First-time setup and server start:
+
+```bash
+# Configure credentials (≥8 chars, must include lowercase, digit, and special character)
+/Applications/VMware\ Fusion.app/Contents/Public/vmrest -C
+
+# Start the server (default: http://127.0.0.1:8697)
+/Applications/VMware\ Fusion.app/Contents/Public/vmrest
+```
+
+```python
+from vmware_fusion_py import VMRest
+from vmware_fusion_py.vmrest import VMRestConnectionError, VMRestNotFoundError
+
+rest = VMRest(username="admin", password="yourpassword")
+
+# List all VMs
+vms = rest.vms.list()
+
+# Power control
+rest.vms.set_power_state(vm_id, "on")
+state = rest.vms.get_power_state(vm_id)
+
+# Networking
+ip = rest.vms.get_ip(vm_id)
+nics = rest.vms.list_nics(vm_id)
+
+# Shared folders
+rest.vms.mount_shared_folder(vm_id, host_path="/host/share", guest_path="myshare")
+rest.vms.list_shared_folders(vm_id)
+
+# Virtual networks
+nets = rest.network.list_vmnets()
+rest.network.update_port_forward(
+    "vmnet8", protocol="tcp", port=2222,
+    host_ip="127.0.0.1", guest_ip="192.168.1.100", guest_port=22,
+)
+
+# Exception handling
+try:
+    rest.vms.get("nonexistent-id")
+except VMRestNotFoundError as exc:
+    print(exc.status_code, exc.message)
+except VMRestConnectionError:
+    print("vmrest is not running")
+```
+
+The `VMRest` constructor accepts an optional `base_url` (default `http://127.0.0.1:8697`) and `timeout` (default `30.0` seconds).
 
 ## License
 
