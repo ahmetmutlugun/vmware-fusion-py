@@ -1,10 +1,12 @@
 # pylint: disable=R0913
 # pylint: disable=R0904
 """This module contains the VMware wrapper class and helper functions."""
+import functools
 import subprocess
 
 
 def _provide_vm_path(func):
+    @functools.wraps(func)
     def wrapper(self, *args, **kwargs):
         if "vm_path" in kwargs:
             return func(self, *args, **kwargs)
@@ -101,9 +103,13 @@ class VMware:
                 stdout, stderr = proc.communicate()
                 stdout = stdout.decode("utf-8").strip()
                 stderr = stderr.decode("utf-8").strip()
-                return {"return_code": proc.returncode, "output": stdout}
+                return {
+                    "return_code": proc.returncode,
+                    "output": stdout,
+                    "error": stderr,
+                }
         except FileNotFoundError:
-            return {"return_code": 2, "output": "File not found!"}
+            return {"return_code": 2, "output": "", "error": "File not found!"}
 
     @_provide_vm_path
     def start(self, vm_path=None, nogui=False):
@@ -433,35 +439,37 @@ class VMware:
         List the processes in the guest VM.
 
         :param vm_path: The path to the VM
-        :return: A list of dictionaries containing process information, or an error dictionary
+        :return: A dict with keys return_code, output (raw), error, and processes ({pid: {owner, cmd}})
         """
-        output = self._run_command("listProcessesInGuest", vm_path)
+        result = self._run_command("listProcessesInGuest", vm_path)
 
-        if output["return_code"] != 0:
-            return output
+        if result["return_code"] != 0:
+            result["processes"] = {}
+            return result
 
         processes = {}
-        for line in output["output"].splitlines()[1:]:
+        for line in result["output"].splitlines()[1:]:
             try:
                 pid, owner, cmd = [item.split("=")[1] for item in line.split(", ")]
-                processes.update({pid: {"owner": owner, "cmd": cmd}})
-            except (ValueError, IndexError) as e:
-                print(f"Error parsing line: {line}. Error: {str(e)}")
+                processes[pid] = {"owner": owner, "cmd": cmd}
+            except (ValueError, IndexError):
                 continue
 
-        return processes
+        result["processes"] = processes
+        return result
 
     @_provide_vm_path
     def get_process_by_id(self, process_id, vm_path=None):
+        """
+        Get a process by its id
+        :param process_id: The id of the process
+        :param vm_path: The path to the vm
+        :return: The process {owner, cmd} or None
+        """
         process_id = str(process_id)
-        if self.vm_path:
-            processes = self.list_processes_in_guest()
-        else:
-            processes = self.list_processes_in_guest(vm_path)
-
-        if processes and process_id in processes:
-            return processes[process_id]
-        return None
+        result = self.list_processes_in_guest(vm_path=vm_path)
+        processes = result.get("processes", {})
+        return processes.get(process_id)
 
     @_provide_vm_path
     def kill_process_in_guest(self, process_id, vm_path=None):
@@ -544,7 +552,7 @@ class VMware:
         :param vm_path: The path to the vm
         :return: The return code and the output
         """
-        return self._run_command("createTempfileInGuest", vm_path)
+        return self._run_command("CreateTempfileInGuest", vm_path)
 
     @_provide_vm_path
     def list_directory_in_guest(self, directory_path, vm_path=None):
@@ -616,7 +624,7 @@ class VMware:
         return self._run_command("connectNamedDevice", vm_path, options)
 
     @_provide_vm_path
-    def disconnect_named_device(self, vm_path, device_name):
+    def disconnect_named_device(self, device_name, vm_path=None):
         """
         Disconnect a named device
         :param device_name: The name of the device

@@ -5,7 +5,7 @@ from vmware_fusion_py import VMware
 vmrun_path = shutil.which("vmrun")
 if not vmrun_path:
     print(
-        f"Could not find vmrun. Install vmrun from {"".format('', "https://www.vmware.com/products/desktop-hypervisor.html", "VMware")}"
+        "Could not find vmrun. Install VMware Fusion from https://www.vmware.com/products/desktop-hypervisor.html"
     )
     exit()
 
